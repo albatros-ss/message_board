@@ -2,7 +2,7 @@
   <v-container>
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3>
-        <h1 class="text--secondary mb-3">Create nea ad</h1>
+        <h1 class="text--secondary mb-3">Create new ad</h1>
         <v-form ref="form" v-model="valid" validation class="mb-3">
           <v-text-field
             v-model="title"
@@ -46,7 +46,11 @@
         <v-layout class="mb-3">
           <v-flex xs12>
             <v-spacer></v-spacer>
-            <v-btn class="success" :disabled="!valid" @click="createAd"
+            <v-btn
+              :loading="loading"
+              class="success"
+              :disabled="!valid || loading"
+              @click="createAd"
               >Create ad
             </v-btn>
           </v-flex>
@@ -67,6 +71,11 @@ export default {
       valid: false
     };
   },
+  computed: {
+    loading() {
+      return this.$store.getters.loading;
+    }
+  },
   methods: {
     createAd() {
       if (this.$refs.form.validate()) {
@@ -77,7 +86,12 @@ export default {
           imageSrc:
             "https://proglib.io/wp-content/uploads/2018/07/1_qnI8K0Udjw4lciWDED4HGw.png"
         };
-        this.$store.dispatch("createAd", ad);
+        this.$store
+          .dispatch("createAd", ad)
+          .then(() => {
+            this.$router.push("/list");
+          })
+          .catch(() => {});
       }
     }
   }

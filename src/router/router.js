@@ -35,7 +35,6 @@ export default new Router({
       name: "newAd",
       component: NewAd,
       beforeEnter: AuthGuard
-
     },
     {
       path: "/login",
