@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Router from "vue-router";
-import AuthGuard from "./auth-guard";
 import Home from "@/components/Home";
 import Ad from "@/components/Ads/Ad";
 import AdList from "@/components/Ads/AdList";
@@ -8,10 +7,13 @@ import NewAd from "@/components/Ads/NewAd";
 import Login from "@/components/Auth/Login";
 import Registration from "@/components/Auth/Registration";
 import Orders from "@/components/User/Orders";
+import store from "../store";
+import * as firebase from "firebase";
+import firebaseConfig from "../firebaseConfig";
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: "",
@@ -27,14 +29,12 @@ export default new Router({
     {
       path: "/list",
       name: "list",
-      component: AdList,
-      beforeEnter: AuthGuard
+      component: AdList
     },
     {
       path: "/new",
       name: "newAd",
-      component: NewAd,
-      beforeEnter: AuthGuard
+      component: NewAd
     },
     {
       path: "/login",
@@ -49,9 +49,32 @@ export default new Router({
     {
       path: "/orders",
       name: "orders",
-      component: Orders,
-      beforeEnter: AuthGuard
+      component: Orders
     }
   ],
   mode: "history"
 });
+
+router.beforeEach((to, from, next) => {
+  if (store.getters.isFirstSession) {
+    store.dispatch("setSession");
+    firebase.initializeApp(firebaseConfig);
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        store.dispatch("autoLoginUser", user);
+        next();
+      } else if (
+        to.name === "list" ||
+        to.name === "newAd" ||
+        to.name === "orders"
+      ) {
+        next("/login?loginError=true");
+      } else {
+        next();
+      }
+    });
+  }
+  next();
+});
+
+export default router;

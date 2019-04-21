@@ -8,11 +8,15 @@ class User {
 
 export default {
   state: {
-    user: null
+    user: null,
+    firstSession: true
   },
   mutations: {
     setUser(state, payload) {
       state.user = payload;
+    },
+    setSession(state, payload) {
+      state.firstSession = payload;
     }
   },
   actions: {
@@ -52,6 +56,9 @@ export default {
     logoutUser({ commit }) {
       fb.auth().signOut();
       commit("setUser", null);
+    },
+    setSession({ commit }) {
+      commit("setSession", false);
     }
   },
   getters: {
@@ -60,6 +67,9 @@ export default {
     },
     isUserLoggedIn(state) {
       return state.user !== null;
+    },
+    isFirstSession(state) {
+      return state.firstSession;
     }
   }
 };

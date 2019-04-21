@@ -3,11 +3,7 @@
     <v-layout row>
       <v-flex xs12>
         <v-card>
-          <v-img
-            :src="ad.imageSrc"
-            height="300px"
-          >
-          </v-img>
+          <v-img :src="ad.imageSrc" height="300px"> </v-img>
           <v-card-text>
             <h1 class="text--primary">{{ ad.title }}</h1>
             <p>{{ ad.description }}</p>
@@ -25,7 +21,12 @@
 <script>
 export default {
   name: "Ad",
-  props: ["id"],
+  props: {
+    id: {
+      type: String,
+      default: ""
+    }
+  },
   computed: {
     ad() {
       const id = this.id;
