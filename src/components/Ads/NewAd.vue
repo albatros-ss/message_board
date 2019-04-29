@@ -23,15 +23,22 @@
         </v-form>
         <v-layout class="mb-3">
           <v-flex xs12>
-            <v-btn class="warning">
+            <v-btn class="warning" @click="triggerUpload">
               Upload
               <v-icon right dark>cloud_upload</v-icon>
+              <input
+                ref="fileInput"
+                type="file"
+                style="display: none;"
+                accept="image/*"
+                @change="onFileChange"
+              />
             </v-btn>
           </v-flex>
         </v-layout>
         <v-layout>
           <v-flex xs12>
-            <img src="" alt="" height="100px" />
+            <img :src="imageSrc" alt="" height="100px" :v-if="imageSrc" />
           </v-flex>
         </v-layout>
         <v-layout>
@@ -49,7 +56,7 @@
             <v-btn
               :loading="loading"
               class="success"
-              :disabled="!valid || loading"
+              :disabled="!valid || !image || loading"
               @click="createAd"
               >Create ad
             </v-btn>
@@ -68,7 +75,9 @@ export default {
       title: "",
       description: "",
       promo: false,
-      valid: false
+      valid: false,
+      image: null,
+      imageSrc: ""
     };
   },
   computed: {
@@ -78,13 +87,12 @@ export default {
   },
   methods: {
     createAd() {
-      if (this.$refs.form.validate()) {
+      if (this.$refs.form.validate() && this.image) {
         const ad = {
           title: this.title,
           description: this.description,
           promo: this.promo,
-          imageSrc:
-            "https://proglib.io/wp-content/uploads/2018/07/1_qnI8K0Udjw4lciWDED4HGw.png"
+          image: this.image
         };
         this.$store
           .dispatch("createAd", ad)
@@ -93,6 +101,18 @@ export default {
           })
           .catch(() => {});
       }
+    },
+    triggerUpload() {
+      this.$refs.fileInput.click();
+    },
+    onFileChange(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageSrc = reader.result;
+      };
+      reader.readAsDataURL(file);
+      this.image = file;
     }
   }
 };
