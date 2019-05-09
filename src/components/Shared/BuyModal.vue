@@ -86,7 +86,7 @@ export default {
             name: this.name,
             phone: this.phone,
             adId: this.ad.id,
-            ownerId: this.$store.getters.user.id
+            ownerId: this.ad.ownerId
           })
           .finally(() => {
             this.name = "";
