@@ -28,6 +28,7 @@ export default {
           .database()
           .ref(`/users/${ownerId}/orders`)
           .push(order);
+        commit("setError", "Your data has been sent");
       } catch (error) {
         commit("setError", error.message);
       }
