@@ -57,7 +57,6 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (store.getters.isFirstSession) {
-    store.dispatch("setSession");
     firebase.initializeApp(firebaseConfig);
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -68,11 +67,12 @@ router.beforeEach((to, from, next) => {
         to.name === "newAd" ||
         to.name === "orders"
       ) {
-        next("/login?loginError=true");
+        next("/login");
       } else {
         next();
       }
     });
+    store.dispatch("setSession");
   }
   next();
 });

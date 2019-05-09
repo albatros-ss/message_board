@@ -53,9 +53,12 @@ export default {
   methods: {
     markDone(order) {
       this.$store
-        .dispatch("markOrderDone", order.id)
+        .dispatch("markOrderDone", {
+          id: order.id,
+          val: !order.done
+        })
         .then(() => {
-          order.done = true;
+          order.done = !order.done;
         })
         .catch(() => {});
     }

@@ -49,7 +49,10 @@ export default {
       return this.$store.getters.loading;
     },
     isOwner() {
-      return this.ad.ownerId === this.$store.getters.user.id;
+      if (this.$store.getters.user) {
+        return this.ad.ownerId === this.$store.getters.user.id;
+      }
+      return false;
     }
   }
 };

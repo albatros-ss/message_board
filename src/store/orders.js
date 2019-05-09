@@ -37,17 +37,23 @@ export default {
       commit("setLoading", true);
       const resultOrders = [];
       try {
-        const fbVal = await fb
-          .database()
-          .ref(`/users/${getters.user.id}/orders`)
-          .once("value");
-        const orders = fbVal.val();
-        Object.keys(orders).forEach(key => {
-          const o = orders[key];
-          resultOrders.push(new Order(o.name, o.phone, o.adId, o.done, key));
+        await fb.auth().onAuthStateChanged(async user => {
+          if (user) {
+            const fbVal = await fb
+              .database()
+              .ref(`/users/${getters.user.id}/orders`)
+              .once("value");
+            const orders = fbVal.val();
+            Object.keys(orders).forEach(key => {
+              const o = orders[key];
+              resultOrders.push(
+                new Order(o.name, o.phone, o.adId, o.done, key)
+              );
+            });
+            commit("setLoading", false);
+          }
         });
         commit("loadOrders", resultOrders);
-        commit("setLoading", false);
       } catch (error) {
         commit("setLoading", false);
         commit("setError", error.message);
@@ -60,9 +66,9 @@ export default {
         await fb
           .database()
           .ref(`/users/${getters.user.id}/orders`)
-          .child(payload)
+          .child(payload.id)
           .update({
-            done: true
+            done: payload.val
           });
       } catch (error) {
         commit("setError", error.message);
@@ -78,7 +84,7 @@ export default {
       return state.orders.filter(o => !o.done);
     },
     orders(state, getters) {
-      return getters.undoneOrders.concat(getters.doneOrders);
+      return getters.doneOrders.concat(getters.undoneOrders);
     }
   }
 };
