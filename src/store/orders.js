@@ -44,12 +44,14 @@ export default {
               .ref(`/users/${getters.user.id}/orders`)
               .once("value");
             const orders = fbVal.val();
-            Object.keys(orders).forEach(key => {
-              const o = orders[key];
-              resultOrders.push(
-                new Order(o.name, o.phone, o.adId, o.done, key)
-              );
-            });
+            if (orders) {
+              Object.keys(orders).forEach(key => {
+                const o = orders[key];
+                resultOrders.push(
+                  new Order(o.name, o.phone, o.adId, o.done, key)
+                );
+              });
+            }
             commit("setLoading", false);
           }
         });
